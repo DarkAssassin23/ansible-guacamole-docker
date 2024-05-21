@@ -1,0 +1,34 @@
+---
+- name: Install Guacamole
+  hosts: guac_host
+  become: true
+
+  pre_tasks:
+    - name: Load configuration (with defaults from example file).
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - example.config.yml
+        - config.yml
+
+    - name: Ensure apt cache is up to date.
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+      when:
+        - ansible_facts.os_family == "Debian"
+
+    - name: Ensure pacman cache is up to date
+      community.general.pacman:
+        update_cache: true
+      when:
+        - ansible_facts.os_family == "Archlinux"
+
+    - name: Ensure dnf cache is up to date
+      ansible.builtin.dnf:
+        update_cache: yes
+      when: ansible_os_family == "RedHat"
+  
+  tasks:
+    - name: Task
+      debug:
+        msg: "Hello, World!"
