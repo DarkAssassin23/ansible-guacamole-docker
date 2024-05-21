@@ -1,0 +1,21 @@
+---
+- name: Ensure dnf-utils is installed.
+  ansible.builtin.dnf:
+    name: dnf-utils
+    state: present
+
+- name: Add the Docker repository.
+  ansible.builtin.shell: |
+    dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+  args:
+    creates: /etc/dnf.repos.d/docker-ce.repo 
+
+- name: Install Docker.
+  ansible.builtin.dnf:
+    update_cache: true
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin

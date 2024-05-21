@@ -1,0 +1,16 @@
+---
+- name: Download Docker install convenience script.
+  ansible.builtin.get_url:
+    url: https://get.docker.com/
+    dest: /tmp/get-docker.sh
+    mode: 0775
+
+- name: Run Docker install convenience script.
+  ansible.builtin.command: /tmp/get-docker.sh
+  environment:
+    CHANNEL: stable
+
+- name: Remove Docker install convenience script.
+  ansible.builtin.file:
+    path: /tmp/get-docker.sh
+    state: absent

@@ -1,0 +1,40 @@
+---
+- name: Check if Docker is already present.
+  ansible.builtin.command: which docker
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: docker_command_result
+
+- name: Setup Docker (Debian).
+  ansible.builtin.include_tasks: docker_install/debian.yml
+  when: 
+    - ansible_facts.os_family == "Debian"
+    - docker_command_result.rc != 0
+  
+- name: Setup Docker (Archlinux).
+  community.general.pacman:
+    name: docker
+    state: present
+  when: 
+    - ansible_facts.os_family == "Archlinux"
+    - docker_command_result.rc != 0
+
+- name: Setup Docker (RedHat).
+  ansible.builtin.include_tasks: docker_install/rhel.yml
+  when: 
+    - ansible_facts.os_family == "RedHat"
+    - docker_command_result.rc != 0
+
+- name: Ensure Docker is started.
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+  when: docker_command_result.rc != 0
+
+- name: "Ensure user is added to the docker group: {{ ansible_user }}"
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
