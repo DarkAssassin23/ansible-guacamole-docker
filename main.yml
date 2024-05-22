@@ -9,19 +9,19 @@
       loop:
         - example.config.yml
         - config.yml
+      tags:
+        - mariadb
 
     - name: Ensure apt cache is up to date.
       ansible.builtin.apt:
         update_cache: true
         cache_valid_time: 3600
-      when:
-        - ansible_facts.os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
 
     - name: Ensure pacman cache is up to date
       community.general.pacman:
         update_cache: true
-      when:
-        - ansible_facts.os_family == "Archlinux"
+      when: ansible_facts.os_family == "Archlinux"
 
     - name: Ensure dnf cache is up to date
       ansible.builtin.dnf:
@@ -31,3 +31,13 @@
   tasks:
     - name: Setup Docker.
       ansible.builtin.import_tasks: tasks/docker.yml
+      tags: docker
+
+    - name: Setup MariaDB.
+      ansible.builtin.import_tasks: tasks/mariadb.yml
+      vars:
+        user_mysql: "{{ 'mysql' if ansible_facts.os_family == 'Archlinux' else 'root' }}"
+        mysqld:
+          socket: /var/lib/mysql/mysql.sock 
+        service_mysql: "{{ 'mysqld' if ansible_facts.os_family == 'Debian' else 'mysql' }}"
+      tags: mariadb
