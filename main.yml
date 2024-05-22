@@ -1,4 +1,22 @@
 ---
+- name: Export old Guacamole database
+  hosts: old_guac
+  become: true
+  tags:
+    - guac
+
+  pre_tasks:
+    - name: Load configuration (with defaults from example file).
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - example.config.yml
+        - config.yml
+
+  tasks:
+    - name: Setup export tasks.
+      ansible.builtin.import_tasks: tasks/export_guac.yml
+      when: mysql_db_name|lower != 'initdb.sql'
+
 - name: Install Guacamole
   hosts: guac_host
   become: true
@@ -10,12 +28,11 @@
         - example.config.yml
         - config.yml
       tags:
-        - mariadb
+        - guac
 
     - name: Ensure apt cache is up to date.
       ansible.builtin.apt:
         update_cache: true
-        cache_valid_time: 3600
       when: ansible_facts.os_family == "Debian"
 
     - name: Ensure pacman cache is up to date
@@ -38,3 +55,32 @@
       vars:
         user_mysql: "{{ 'mysql' if ansible_facts.os_family == 'Archlinux' else 'root' }}"
       tags: mariadb
+
+    - name: Setup Guacamole database.
+      ansible.builtin.import_tasks: tasks/guacamole_database.yml
+      tags: guac
+
+- name: Cleanup localhost.
+  hosts: localhost
+  gather_facts: false
+  tags:
+    - guac
+
+  pre_tasks:
+    - name: Load configuration (with defaults from example file).
+      ansible.builtin.include_vars: "{{ item }}"
+      loop:
+        - example.config.yml
+        - config.yml
+
+  tasks:
+    - name: Check if database dump exists.
+      ansible.builtin.stat:
+        path: "{{ mysql_db_name }}"
+      register: dump
+
+    - name: Remove database dump from localhost.
+      ansible.builtin.file:
+        path: "{{ mysql_db_name }}"
+        state: absent
+      when: dump.stat.exists

@@ -1,0 +1,46 @@
+---
+- name: Ensure dependencies are met.
+  ansible.builtin.import_tasks: configure_mariadb/dependencies.yml
+
+- name: Configure mysqld.socket.
+  ansible.builtin.import_tasks: configure_mariadb/mysqld.yml
+
+- name: Check if my.cnf already exists.
+  ansible.builtin.stat:
+    path: "/root/.my.cnf"
+  register: root_cnf
+
+- name: Backup current root 'my.cnf' file.
+  ansible.builtin.shell: "cp /root/.my.cnf /root/.my.cnf.bak"
+  when: root_cnf.stat.exists
+
+- name: Place temporary cnf file.
+  ansible.builtin.template:
+    src: templates/old_root.cnf.j2
+    dest: "/root/.my.cnf"
+    mode: '0644'
+
+- name: Dump Guacamole database.
+  community.mysql.mysql_db:
+    state: dump
+    name: guacamole_db
+    login_unix_socket: "{{ mysqld.socket }}"
+    target: "/tmp/{{ mysql_db_name }}"
+
+- name: Copy database dump from old install.
+  ansible.builtin.fetch:
+    src: "/tmp/{{ mysql_db_name }}"
+    dest: "{{ mysql_db_name }}"
+    flat: true
+
+- name: Remove unneeded files.
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/{{ mysql_db_name }}"
+    - /root/.my.cnf
+
+- name: Reset root 'my.cnf' file.
+  ansible.builtin.shell: "cp /root/.my.cnf.bak /root/.my.cnf"
+  when: root_cnf.stat.exists

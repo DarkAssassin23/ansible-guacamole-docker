@@ -1,0 +1,24 @@
+---
+- name: Initialize Guacamole database.
+  ansible.builtin.shell: >-
+    docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > /tmp/"{{ mysql_db_name }}"
+  when: (mysql_db_name|lower == 'initdb.sql') or ('old_guac' not in groups)
+
+- name: Copy existing Guacamole database to remote host.
+  ansible.builtin.copy:
+    src: "{{ mysql_db_name }}"
+    dest: "/tmp/{{ mysql_db_name }}"
+  when: 
+    - mysql_db_name != 'initdb.sql'
+    - ('old_guac' in groups)
+
+- name: Import Guacamole database.
+  community.mysql.mysql_db:
+    name: guacamole_db
+    state: import
+    target: "/tmp/{{ mysql_db_name }}"
+
+- name: Remove unneeded database file (Remote).
+  ansible.builtin.file:
+    path: "/tmp/{{ mysql_db_name }}"
+    state: absent

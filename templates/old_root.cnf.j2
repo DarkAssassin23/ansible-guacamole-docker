@@ -1,0 +1,9 @@
+[client]
+socket   = {{ mysqld.socket }}
+user     = {{ old_mysql_user }}
+password = {{ old_mysql_password }}
+
+[mysql_upgrade]
+socket   = {{ mysqld.socket }}
+user     = {{ old_mysql_user }}
+password = {{ old_mysql_password }}
