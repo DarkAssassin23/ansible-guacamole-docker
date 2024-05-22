@@ -1,0 +1,20 @@
+---
+- name: Ensure PyMySQL is installed (Debian).
+  ansible.builtin.apt:
+    name: python3-pymysql
+  when: ansible_facts.os_family == "Debian"
+
+- name: Ensure PyMySQL is installed (Archlinux)
+  community.general.pacman:
+    name: python-pymysql
+  when: ansible_facts.os_family == "Archlinux"
+
+- name: Ensure Pip is installed (RedHat)
+  ansible.builtin.dnf:
+    name: python3-pip
+  when: ansible_os_family == "RedHat"
+
+- name: Ensure PyMySQL is installed (RedHat)
+  ansible.builtin.pip:
+    name: pymysql
+  when: ansible_os_family == "RedHat"

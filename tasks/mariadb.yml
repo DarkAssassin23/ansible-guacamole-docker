@@ -1,34 +1,27 @@
 ---
+- name: Check if MariaDB is already present.
+  ansible.builtin.command: which mariadb
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: mariadb_command_result
+
 - name: Install MariaDB.
   ansible.builtin.package:
     name: mariadb-server
     state: present
+  when: mariadb_command_result.rc != 0
 
-- name: Ensure PyMySQL is installed (Debian).
-  ansible.builtin.apt:
-    name: python3-pymysql
-  when: ansible_facts.os_family == "Debian"
-
-- name: Ensure PyMySQL is installed (Archlinux)
-  community.general.pacman:
-    name: python-pymysql
-  when: ansible_facts.os_family == "Archlinux"
-
-- name: Ensure Pip is installed (RedHat)
-  ansible.builtin.dnf:
-    name: python3-pip
-  when: ansible_os_family == "RedHat"
-
-- name: Ensure PyMySQL is installed (RedHat)
-  ansible.builtin.pip:
-    name: pymysql
-  when: ansible_os_family == "RedHat"
+- name: Ensure dependencies are met.
+  ansible.builtin.import_tasks: configure_mariadb/dependencies.yml
 
 # Arch gets mad if you try to start the service and don't do this
 - name: Initialize SQL for Archlinux.
   ansible.builtin.shell: >-
     mariadb-install-db --user={{ user_mysql }} --basedir=/usr --datadir=/var/lib/mysql
-  when: ansible_facts.os_family == 'Archlinux'
+  when: 
+    - ansible_facts.os_family == 'Archlinux'
+    - mariadb_command_result.rc != 0
 
 - name: Ensure MariaDB is started.
   ansible.builtin.service:
@@ -36,23 +29,10 @@
     state: started
     enabled: true
 
-- name: Configure mysqld.socket (Debian).
-  ansible.builtin.set_fact:
-    mysqld:
-      socket: /var/run/mysqld/mysqld.sock
-  when: ansible_facts.os_family == "Debian"
+- name: Configure mysqld.socket.
+  ansible.builtin.include_tasks: configure_mariadb/mysqld.yml
+  when: mariadb_command_result.rc != 0
 
-- name: Configure mysqld.socket (Archlinux).
-  ansible.builtin.set_fact:
-    mysqld:
-      socket: /run/mysqld/mysqld.sock
-  when: ansible_facts.os_family == "Archlinux"
-
-- name: Configure mysqld.socket (RedHat).
-  ansible.builtin.set_fact:
-    mysqld:
-      socket: /var/lib/mysql/mysql.sock
-  when: ansible_facts.os_family == "RedHat"
-
-- name: Configure MariaDB
+- name: Configure MariaDB.
   ansible.builtin.include_tasks: configure_mariadb/init_mariadb.yml
+  when: mariadb_command_result.rc != 0
