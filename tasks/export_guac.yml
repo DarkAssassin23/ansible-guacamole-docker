@@ -23,7 +23,7 @@
 - name: Dump Guacamole database.
   community.mysql.mysql_db:
     state: dump
-    name: guacamole_db
+    name: "{{ old_database_name }}"
     login_unix_socket: "{{ mysqld.socket }}"
     target: "/tmp/{{ mysql_db_name }}"
 

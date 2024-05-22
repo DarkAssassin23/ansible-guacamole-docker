@@ -2,8 +2,10 @@ mysql_db_name: initdb.sql
 mysql_user: mysql
 mysql_user_password: password
 mysql_root_password: securepassword
+mysql_database_name: guacamole_db
 
 # Used to dump the database from an existing install
 old_mysql_user: mysql # Make sure this user has permissions to dump databases
 old_mysql_password: password
 old_mysql_host: "192.168.20.100"
+old_database_name: guacamole_db

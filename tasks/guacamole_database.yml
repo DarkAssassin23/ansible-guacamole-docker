@@ -14,7 +14,7 @@
 
 - name: Import Guacamole database.
   community.mysql.mysql_db:
-    name: guacamole_db
+    name: "{{ mysql_database_name }}"
     state: import
     target: "/tmp/{{ mysql_db_name }}"
 
