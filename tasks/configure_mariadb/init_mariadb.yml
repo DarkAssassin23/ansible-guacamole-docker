@@ -18,7 +18,7 @@
     password "{{ mysql_root_password }}" proc
 
 - name: Set "{{ mysql_user }}" user and password.
-  mysql_user:
+  community.mysql.mysql_user:
     name: "{{ mysql_user }}"
     password: "{{ mysql_user_password }}"
     priv: '*.*:ALL,GRANT'
@@ -50,6 +50,7 @@
   community.mysql.mysql_user:
     name: ""
     host_all: true
+    login_user: root
     state: absent
 
 - name: Ensure test database is removed.

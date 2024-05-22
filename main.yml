@@ -37,7 +37,4 @@
       ansible.builtin.import_tasks: tasks/mariadb.yml
       vars:
         user_mysql: "{{ 'mysql' if ansible_facts.os_family == 'Archlinux' else 'root' }}"
-        # mysqld:
-        #   socket: /var/lib/mysql/mysql.sock 
-        service_mysql: "{{ 'mysqld' if ansible_facts.os_family == 'Debian' else 'mysql' }}"
       tags: mariadb
