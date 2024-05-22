@@ -65,6 +65,13 @@
     state: stopped
     enabled: true
 
+- name: Update bind address (Debian).
+  ansible.builtin.replace:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: 'bind-address.*=.*'
+    replace: 'bind-address = 0.0.0.0'
+  when: ansible_facts.os_family == 'Debian'
+
 - name: Remove mysqld log file.
   ansible.builtin.file:
     path: /var/log/mysqld.log
