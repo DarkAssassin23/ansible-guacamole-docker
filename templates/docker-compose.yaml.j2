@@ -1,0 +1,27 @@
+services:
+  guacd:
+    tty: true
+    stdin_open: true
+    image: guacamole/guacd
+    restart: always
+    ports:
+      - 4822:4822
+    environment:
+      MYSQL_DATABASE: "{{ mysql_database_name }}"
+      MYSQL_USER: "{{ mysql_user }}"
+      MYSQL_PASSWORD: "{{ mysql_user_password }}"
+      MYSQL_HOSTNAME: "localhost"
+  guacamole:
+    tty: true
+    stdin_open: true
+    image: guacamole/guacamole
+    restart: always
+    ports:
+      - {{ webui_port }}:{{ webui_port }}
+    environment:
+      MYSQL_DATABASE: "{{ mysql_database_name }}"
+      MYSQL_USER: "{{ mysql_user }}"
+      MYSQL_PASSWORD: "{{ mysql_user_password }}"
+      MYSQL_HOSTNAME: "localhost"
+      MYSQL_SSL_MODE: disabled
+      GUACD_HOSTNAME: "{{ ansible_default_ipv4.address }}"

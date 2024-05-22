@@ -4,6 +4,9 @@ mysql_user_password: password
 mysql_root_password: securepassword
 mysql_database_name: guacamole_db
 
+webui_port: 8080
+guacamole_dir: guacamole # Directory to store Guacamole Docker files (ex. docker-compose.yaml)
+
 # Used to dump the database from an existing install
 old_mysql_user: mysql # Make sure this user has permissions to dump databases
 old_mysql_password: password

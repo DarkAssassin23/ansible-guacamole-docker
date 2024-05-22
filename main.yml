@@ -29,6 +29,7 @@
         - config.yml
       tags:
         - guac
+        - guacdock
 
     - name: Ensure apt cache is up to date.
       ansible.builtin.apt:
@@ -56,9 +57,14 @@
         user_mysql: "{{ 'mysql' if ansible_facts.os_family == 'Archlinux' else 'root' }}"
       tags: mariadb
 
-    - name: Setup Guacamole database.
+    - name: "Setup Guacamole: Database."
       ansible.builtin.import_tasks: tasks/guacamole_database.yml
       tags: guac
+
+    - name: "Setup Guacamole: Docker."
+      become: false
+      ansible.builtin.import_tasks: tasks/guacamole_docker.yml
+      tags: guacdock
 
 - name: Cleanup localhost.
   hosts: localhost
