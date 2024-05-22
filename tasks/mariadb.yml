@@ -37,11 +37,22 @@
 
 - name: Configure MariaDB (Debian).
   ansible.builtin.include_tasks: configure_mariadb/debian.yml
+  vars:
+    mysqld:
+      socket: /var/lib/mysql/mysql.sock
   when: ansible_facts.os_family == "Debian"
 
 - name: Configure MariaDB (RedHat).
   ansible.builtin.include_tasks: configure_mariadb/rhel.yml
+  vars:
+    mysqld:
+      socket: /var/lib/mysql/mysql.sock 
   when: ansible_facts.os_family == "RedHat"
 
-
+- name: Configure MariaDB (Archlinux).
+  ansible.builtin.include_tasks: configure_mariadb/arch.yml
+  vars:
+    mysqld:
+      socket: /run/mysqld/mysqld.sock
+  when: ansible_facts.os_family == "Archlinux"
 
