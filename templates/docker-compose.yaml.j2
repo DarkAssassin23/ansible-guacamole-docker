@@ -10,7 +10,7 @@ services:
       MYSQL_DATABASE: "{{ mysql_database_name }}"
       MYSQL_USER: "{{ mysql_user }}"
       MYSQL_PASSWORD: "{{ mysql_user_password }}"
-      MYSQL_HOSTNAME: "localhost"
+      MYSQL_HOSTNAME: "{{ ansible_default_ipv4.address }}"
   guacamole:
     tty: true
     stdin_open: true
@@ -22,6 +22,5 @@ services:
       MYSQL_DATABASE: "{{ mysql_database_name }}"
       MYSQL_USER: "{{ mysql_user }}"
       MYSQL_PASSWORD: "{{ mysql_user_password }}"
-      MYSQL_HOSTNAME: "localhost"
-      MYSQL_SSL_MODE: disabled
+      MYSQL_HOSTNAME: "{{ ansible_default_ipv4.address }}"
       GUACD_HOSTNAME: "{{ ansible_default_ipv4.address }}"
