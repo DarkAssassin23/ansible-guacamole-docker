@@ -1,0 +1,18 @@
+---
+- name: Set possible mysqld.sockets.
+  ansible.builtin.set_fact:
+    socks: ["/var/run/mysqld/mysqld.sock", "/run/mysqld/mysqld.sock", "/var/lib/mysql/mysql.sock"]
+
+- name: Check which mysqld sockets exist.
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ socks }}"
+  register: valid_socks
+
+- name: Configure mysqld.socket.
+  ansible.builtin.set_fact:
+    mysqld:
+      socket: "{{ item.item }}"
+  with_items: "{{ valid_socks.results }}"
+  when: item.stat.exists
+  no_log: true
