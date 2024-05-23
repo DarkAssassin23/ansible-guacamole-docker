@@ -13,9 +13,12 @@
     - ('old_guac' in groups)
 
 - name: Import Guacamole database.
+  become: true
   community.mysql.mysql_db:
     name: "{{ mysql_database_name }}"
     state: import
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
     target: "/tmp/{{ mysql_db_name }}"
 
 - name: Remove unneeded database file (Remote).

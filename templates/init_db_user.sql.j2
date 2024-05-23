@@ -1,0 +1,4 @@
+CREATE DATABASE {{ mysql_database_name }};
+CREATE USER '{{ mysql_user }}'@'%' IDENTIFIED BY '{{ mysql_user_password }}';
+GRANT SELECT,INSERT,UPDATE,DELETE ON {{ mysql_database_name }}.* TO '{{ mysql_user }}'@'%';
+FLUSH PRIVILEGES;
