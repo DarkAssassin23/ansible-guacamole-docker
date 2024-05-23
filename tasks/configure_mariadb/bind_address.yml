@@ -1,0 +1,23 @@
+- name: Set MySQL server config path.
+  ansible.builtin.set_fact:
+    config_paths: ["/etc/mysql/mariadb.conf.d/50-server.cnf", "/etc/my.cnf.d/server.cnf"]
+
+- name: Check which config path exist.
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  with_items: "{{ config_paths }}"
+  register: valid_configs
+
+- name: Configure MySQL config path.
+  ansible.builtin.set_fact:
+    mysql_conf: "{{ item.item }}"
+  with_items: "{{ valid_configs.results }}"
+  when: item.stat.exists
+  no_log: true
+
+- name: Update bind address.
+  ansible.builtin.replace:
+    path: "{{ mysql_conf }}"
+    regexp: 'bind-address.*=.*'
+    replace: 'bind-address = 0.0.0.0'
+  
