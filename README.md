@@ -5,7 +5,8 @@ An Ansible playbook to deploy Guacamole with Docker Compose
 
 ## Setup
 1. Install Ansible
-2. Rename `example.config.yml` and `example.inventory.ini` to `config.yml`
+2. Install requirements: `ansible-galaxy collection install -r requirements.yml`
+3. Rename `example.config.yml` and `example.inventory.ini` to `config.yml`
    and `inventory.ini` respectively, and modify them as desired. 
 
 ## Usage
