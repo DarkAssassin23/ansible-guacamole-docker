@@ -14,7 +14,9 @@
   
 - name: Setup Docker (Archlinux).
   community.general.pacman:
-    name: docker
+    name: 
+      - docker
+      - docker-compose
     state: present
   when: 
     - ansible_facts.os_family == "Archlinux"
