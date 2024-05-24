@@ -4,9 +4,22 @@
     name: dnf-utils
     state: present
 
+- name: Set distribution value.
+  block:
+    - name: Set RedHat distribution to options.
+      ansible.builtin.set_fact:
+        rhel_opts: {
+          "centos" : "centos",
+          "fedora" : "fedora",
+        }
+
+    - name: Identify which RedHat option to pull.
+      ansible.builtin.set_fact:
+        rhel_opt: "{{ [ansible_distribution|lower] | map('extract', rhel_opts) | first | default('rhel') }}"
+
 - name: Add the Docker repository.
   ansible.builtin.shell: >-
-    dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+    dnf config-manager --add-repo https://download.docker.com/linux/{{ rhel_opt }}/docker-ce.repo
   args:
     creates: /etc/dnf.repos.d/docker-ce.repo 
 
