@@ -35,7 +35,7 @@
     enabled: true
   when: docker_command_result.rc != 0
 
-- name: "Ensure user is added to the docker group: {{ ansible_user }}"
+- name: "Ensure user ({{ ansible_user }}) is added to the docker group"
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: docker
