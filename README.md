@@ -20,7 +20,7 @@ Allowing you to semerely migrate your Guacamole installation to a new host.
    them `config.yml` and `inventory.ini` respectively. Modify them as
    desired/needed.
 
-## Usage
+## Playbook Usage
 Once you configured your `config.yml` and `inventory.ini` files, run the
 playbook to install Guacamole with:
 ```bash
@@ -41,3 +41,8 @@ If you did not export an existing Guacamole database, the default credentials
 will be `guacadmin` for both the username and password. If you exported
 an existing Guacamole database, the username and password will be the same
 as what they were on that installation.
+
+## Guacamole Usage
+For information on how to use Guacamole once it is installed, refer to the
+offical Guacamole usage 
+[guide](https://guacamole.apache.org/doc/gug/using-guacamole.html).
