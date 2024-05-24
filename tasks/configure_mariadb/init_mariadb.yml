@@ -41,7 +41,7 @@
 
 - name: Copy root.cnf.
   ansible.builtin.template:
-    src: root.cnf.j2
+    src: templates/root.cnf.j2
     dest: /etc/mysql/root.cnf
     mode: '0600'
     owner: root
