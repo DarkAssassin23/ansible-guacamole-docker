@@ -2,8 +2,6 @@
 - name: Export old Guacamole database
   hosts: old_guac
   become: true
-  tags:
-    - guac
 
   pre_tasks:
     - name: Load configuration (with defaults from example file).
@@ -27,9 +25,6 @@
       loop:
         - example.config.yml
         - config.yml
-      tags:
-        - guac
-        - guacdock
 
     - name: Ensure apt cache is up to date.
       ansible.builtin.apt:
@@ -49,33 +44,26 @@
   tasks:
     - name: Setup Docker.
       ansible.builtin.import_tasks: tasks/docker.yml
-      tags: docker
 
     - name: Setup MariaDB.
       ansible.builtin.import_tasks: tasks/mariadb.yml
       vars:
         user_mysql: "{{ 'mysql' if ansible_facts.os_family == 'Archlinux' else 'root' }}"
-      tags: mariadb
 
     - name: "Setup Guacamole: Database."
       ansible.builtin.import_tasks: tasks/guacamole_database.yml
-      tags: guac
 
     - name: "Setup Guacamole: Docker."
       become: false
       ansible.builtin.import_tasks: tasks/guacamole_docker.yml
-      tags: guacdock
 
     - name: Configure firewall
       ansible.builtin.import_tasks: tasks/firewall.yml
-      tags: firewall
       when: ansible_facts.os_family == "RedHat"
 
 - name: Cleanup localhost.
   hosts: localhost
   gather_facts: false
-  tags:
-    - guac
 
   pre_tasks:
     - name: Load configuration (with defaults from example file).
