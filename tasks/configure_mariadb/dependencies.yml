@@ -1,20 +1,13 @@
 ---
-- name: Ensure PyMySQL is installed (Debian).
-  ansible.builtin.apt:
-    name: python3-pymysql
-  when: ansible_facts.os_family == "Debian"
+- name: Set PyMySQL package name.
+  ansible.builtin.set_fact:
+    pymysql_pkg_opts: {
+      "Debian" : "python3-pymysql",
+      "Archlinux" : "python-pymysql",
+      "RedHat" : "python3-PyMySQL"
+    }
 
-- name: Ensure PyMySQL is installed (Archlinux)
-  community.general.pacman:
-    name: python-pymysql
-  when: ansible_facts.os_family == "Archlinux"
-
-- name: Ensure Pip is installed (RedHat)
-  ansible.builtin.dnf:
-    name: python3-pip
-  when: ansible_os_family == "RedHat"
-
-- name: Ensure PyMySQL is installed (RedHat)
-  ansible.builtin.pip:
-    name: pymysql
-  when: ansible_os_family == "RedHat"
+- name: Install PyMySQL package.
+  ansible.builtin.package:
+    name: "{{ [ansible_facts.os_family] | map('extract', pymysql_pkg_opts) | first | default('python3-pymysql') }}"
+    state: present
