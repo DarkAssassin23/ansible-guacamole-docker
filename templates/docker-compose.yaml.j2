@@ -4,8 +4,7 @@ services:
     stdin_open: true
     image: guacamole/guacd
     restart: always
-    ports:
-      - 4822:4822
+    network_mode: "host" # Allows for Wake-on-LAN support
     environment:
       MYSQL_DATABASE: "{{ mysql_database_name }}"
       MYSQL_USER: "{{ mysql_user }}"
@@ -17,7 +16,7 @@ services:
     image: guacamole/guacamole
     restart: always
     ports:
-      - {{ webui_port }}:{{ webui_port }}
+      - {{ webui_port }}:8080
     environment:
       MYSQL_DATABASE: "{{ mysql_database_name }}"
       MYSQL_USER: "{{ mysql_user }}"
