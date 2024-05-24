@@ -10,7 +10,9 @@
 
 - name: Configure MySQL config path.
   ansible.builtin.set_fact:
-    mysql_conf: "{{ valid_configs.results[0].item }}"
+    mysql_conf: "{{ item.item }}"
+  with_items: "{{ valid_configs.results }}"
+  when: item.stat.exists
   no_log: true
 
 - name: Update bind address.

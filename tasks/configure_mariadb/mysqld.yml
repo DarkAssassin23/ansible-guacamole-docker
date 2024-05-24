@@ -12,5 +12,7 @@
 - name: Configure mysqld.socket.
   ansible.builtin.set_fact:
     mysqld:
-      socket: "{{ valid_socks.results[0].item }}"
+      socket: "{{ item.item }}"
+  with_items: "{{ valid_socks.results }}"
+  when: item.stat.exists
   no_log: true
