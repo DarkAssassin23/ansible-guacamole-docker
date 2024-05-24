@@ -17,22 +17,24 @@
     --password="{{ temp_root_pw.stdout }}"
     password "{{ mysql_root_password }}" proc
 
-# Creates the guacamole user, doing via ansible causes errors when
-# the Docker container tries to connect to the server
-- name: Copy SQL init script.
-  ansible.builtin.template:
-    src: templates/init_db_user.sql.j2
-    dest: /tmp/init_db_user.sql
-    mode: '0644'
+# Doing this step via ansible's community.mysql.mysql_user module causes errors
+# when the Docker container tries to connect to the server
+- name: Create Guacamole User.
+  block:
+    - name: Copy SQL init script.
+      ansible.builtin.template:
+        src: templates/init_db_user.sql.j2
+        dest: /tmp/init_db_user.sql
+        mode: '0644'
 
-- name: Run init SQL script
-  ansible.builtin.shell: >-
-    mariadb -uroot -p="{{ mysql_root_password }}" < /tmp/init_db_user.sql
+    - name: Run init SQL script
+      ansible.builtin.shell: >-
+        mariadb -uroot -p="{{ mysql_root_password }}" < /tmp/init_db_user.sql
 
-- name: Remove SQL init script.
-  ansible.builtin.file:
-    path: /tmp/init_db_user.sql
-    state: absent
+    - name: Remove SQL init script.
+      ansible.builtin.file:
+        path: /tmp/init_db_user.sql
+        state: absent
 
 - name: Make sure /etc/mysql exists.
   ansible.builtin.file:
