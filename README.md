@@ -26,6 +26,10 @@ playbook to install Guacamole with:
 ```bash
 ansible-playbook main.yml -i inventory.ini -K
 ```
+> [!NOTE]
+> Before you run the playbook, make sure your SSH key is in the 
+> `.ssh/authorized_keys` file of the user you are trying to log into. Also,
+> make sure that you have accepted the host's SSH fingerprints.
 
 Once the playbook completes, you should be able to navigate to the IP address
 of the host you ran to playbook on at the given port you configured, e.g.,
